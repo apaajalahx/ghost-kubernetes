@@ -10,5 +10,5 @@ run ghost
 ```
 kubectl apply -f config/ghost-config.yml
 kubectl apply -f volumes/ghost-pv-claim.yml
-kubectl apply 0f ghost.yml
+kubectl apply -f ghost.yml
 ```
