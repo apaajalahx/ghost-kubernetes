@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ghost
+spec:
+  selector:
+    matchLabels:
+      app: ghost
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: ghost
+    spec:
+      containers:
+        - image: ghost:alpine
+          envFrom:
+          - configMapRef:
+              name: ghost-config
+          name: ghost
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 8080
+          resources:
+            requests:
+              cpu: 500m
+              memory: 500Mi
+            limits:
+              cpu: 1000m
+              memory: 1000Mi
+          volumeMounts:
+            - name: ghost-volume-storage
+              mountPath: /content
+      volumes:
+        - name: ghost-volume-storage
+          persistentVolumeClaim:
+            claimName: ghost-pv-claim
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ghost-service
+spec:
+  selector:
+    app: ghost
+  ports:
+  - protocol: TCP
+    port: 8080
+    name: https
+    targetPort: 8080
+  type: ClusterIP
